@@ -22,7 +22,8 @@ private:
     void updateWinStatus(); //Check if player win
     void updateLoseStatus(); //Check if player lose
     void moveByMouse(std::vector<std::vector<int>> mouseCoords);
-    void moveByKeyboard(std::string pressedKey);
+    void moveByKeyboard(std::string signal);
+    Direction convertSignalToDirection(std::string signal);
 };
 
 #endif // GAME_H

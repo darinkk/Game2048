@@ -12,10 +12,10 @@ void Cell::resetCell(){
     // yCoordinate = 0;
     isFilled = false;
 
-    neighbors["UP"] = nullptr;
-    neighbors["DOWN"] = nullptr;
-    neighbors["LEFT"] = nullptr;
-    neighbors["RIGHT"] = nullptr;
+    neighbors[Direction::UP] = nullptr;
+    neighbors[Direction::DOWN] = nullptr;
+    neighbors[Direction::LEFT] = nullptr;
+    neighbors[Direction::RIGHT] = nullptr;
 }
 
 bool Cell::cellIsMovable(){
@@ -34,7 +34,7 @@ bool Cell::cellIsMovable(){
     return false;
 }
 
-int Cell::moveCellToDirection(std::string direction){
+int Cell::moveCellToDirection(Direction direction){
     /*
     * We move a cell if it`s movable.
     * We move a cell to direction while until it can move in the direction or
@@ -70,27 +70,23 @@ int Cell::moveCellToDirection(std::string direction){
     return mergedSum;
 }
 
-void Cell::addNeighbor(std::string dir, Cell *neighbor){
-    if(dir == "UP"|| dir == "DOWN" || dir == "LEFT" || dir == "RIGHT"){
-        neighbors[dir] = neighbor;
-    }
+void Cell::addNeighbor(Direction dir, Cell *neighbor){
+    //if(dir == Direction::UP|| dir == Direction::DOWN || dir == Direction::LEFT || dir == Direction::RIGHT){
+    neighbors[dir] = neighbor;
+    //}
 }
 
 void Cell::updateFilledStatus(){
-    if(value != 0){
-        isFilled = true;
-    }else{
-        isFilled = false;
-    }
+    isFilled = (value != 0);
 }
 
-Cell* Cell::getNeighbor(std::string dir){
-    if(dir == "UP" || dir == "DOWN" || dir == "LEFT" || dir == "RIGHT"){
-        return neighbors[dir];
-    }
-    else{
-        return nullptr;
-    }
+Cell* Cell::getNeighbor(Direction dir){
+    //if(dir == Direction::UP || dir == Direction::DOWN || dir == Direction::LEFT || dir == Direction::RIGHT){
+    return neighbors[dir];
+    //}
+    //else{
+    //    return nullptr;
+    //}
 }
 
 void Cell::setCellValue(int newValue){

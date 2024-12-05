@@ -21,15 +21,11 @@ void Game::updateWinStatus(){
 }
 
 void Game::updateLoseStatus(){
-    if(!gameField.getMovableStatus()){
-        loseStatus = true;
-    }else{
-        loseStatus = false;
-    }
+    loseStatus = (!gameField.getMovableStatus());
 }
 
 void Game::moveByMouse(std::vector<std::vector<int>> mouseCoords){
-    std::string direction;
+    Direction direction;
     int incrementForScore = 0;
     //std::vector<std::vector<Cell>>& currentField = gameField.getField();
     //int vectorSize = mouseCoords.size();
@@ -43,16 +39,16 @@ void Game::moveByMouse(std::vector<std::vector<int>> mouseCoords){
     if(std::abs(xMove) > std::abs(yMove)) {
         //*HORIZONTAL*//
         if(xMove > 0){
-            direction = "RIGHT";
+            direction = Direction::RIGHT;
         }else{
-            direction = "LEFT";
+            direction = Direction::LEFT;
         }
     }else{
         //*VERTICAL*//
         if(yMove > 0){
-            direction = "DOWN";
+            direction = Direction::DOWN;
         }else{
-            direction = "UP";
+            direction = Direction::UP;
         }
     }
 
@@ -60,19 +56,34 @@ void Game::moveByMouse(std::vector<std::vector<int>> mouseCoords){
     gameScore.updateCurrentScore(incrementForScore);
 }
 
-void Game::moveByKeyboard(std::string pressedKey){
-    std::string direction;
+Direction Game::convertSignalToDirection(std::string signal){
+    Direction direction;
+    //This logic can be changed, I don`t know now how will look "signal"
+    if(signal == "a" || signal == "A"){
+        direction = Direction::LEFT;
+    }else if(signal == "w" || signal == "W"){
+        direction = Direction::UP;
+    }else if(signal == "d" || signal == "D"){
+        direction = Direction::RIGHT;
+    }else if(signal == "s" || signal == "S"){
+        direction = Direction::DOWN;
+    }
+    return direction;
+}
+
+void Game::moveByKeyboard(std::string signal){
+    Direction direction = convertSignalToDirection(signal);
     int incrementForScore = 0;
 
-    if(pressedKey == "a" || pressedKey == "A"){
-        direction = "LEFT";
-    }else if(pressedKey == "w" || pressedKey == "W"){
-        direction = "UP";
-    }else if(pressedKey == "d" || pressedKey == "D"){
-        direction = "RIGHT";
-    }else if(pressedKey == "s" || pressedKey == "S"){
-        direction = "DOWN";
-    }
+    // if(pressedKey == "a" || pressedKey == "A"){
+    //     direction = "LEFT";
+    // }else if(pressedKey == "w" || pressedKey == "W"){
+    //     direction = "UP";
+    // }else if(pressedKey == "d" || pressedKey == "D"){
+    //     direction = "RIGHT";
+    // }else if(pressedKey == "s" || pressedKey == "S"){
+    //     direction = "DOWN";
+    // }
 
     incrementForScore = gameField.moveCells(direction);
     gameScore.updateCurrentScore(incrementForScore);
@@ -80,12 +91,16 @@ void Game::moveByKeyboard(std::string pressedKey){
 
 void Game::startGame(int fieldSize){
     gameField.createField(fieldSize);
-    int numberOfStartsValues = 2;
+    int numberOfStartsValues = 6;
     gameField.addNumbers(numberOfStartsValues);
 
-    gameField.printFieldConsole();
-    gameScore.printScoreConsole();
+    // gameField.printFieldConsole();
+    // gameScore.printScoreConsole();
 
+    // moveByKeyboard("s");
+
+    // gameField.printFieldConsole();
+    // gameScore.printScoreConsole();
     // std::string dir = "d";
 
     // //std::cin >> dir;

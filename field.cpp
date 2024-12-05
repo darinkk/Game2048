@@ -42,17 +42,17 @@ void Field::initializeField(){
         for(int j = 0; j < size; j++){
             field[i][j] = Cell();
 
-            if(i-1>=0){ field[i][j].addNeighbor("UP", &field[i-1][j]); }
-            else{ field[i][j].addNeighbor("UP", nullptr); }
+            if(i-1>=0){ field[i][j].addNeighbor(Direction::UP, &field[i-1][j]); }
+            else{ field[i][j].addNeighbor(Direction::UP, nullptr); }
 
-            if(i+1 < size){ field[i][j].addNeighbor("DOWN", &field[i+1][j]); }
-            else{ field[i][j].addNeighbor("DOWN", nullptr); }
+            if(i+1 < size){ field[i][j].addNeighbor(Direction::DOWN, &field[i+1][j]); }
+            else{ field[i][j].addNeighbor(Direction::DOWN, nullptr); }
 
-            if(j-1 >= 0){ field[i][j].addNeighbor("LEFT", &field[i][j-1]); }
-            else{ field[i][j].addNeighbor("LEFT", nullptr); }
+            if(j-1 >= 0){ field[i][j].addNeighbor(Direction::LEFT, &field[i][j-1]); }
+            else{ field[i][j].addNeighbor(Direction::LEFT, nullptr); }
 
-            if(j+1 < size){ field[i][j].addNeighbor("RIGHT", &field[i][j+1]); }
-            else{ field[i][j].addNeighbor("RIGHT", nullptr); }
+            if(j+1 < size){ field[i][j].addNeighbor(Direction::RIGHT, &field[i][j+1]); }
+            else{ field[i][j].addNeighbor(Direction::RIGHT, nullptr); }
 
         }
     }
@@ -68,16 +68,16 @@ void Field::cleanField(){
     }
 }
 
-std::map<std::string, int> Field::initStartPointsForMove(std::string direction){
+std::map<std::string, int> Field::initStartPointsForMove(Direction direction){
     std::map<std::string, int> startPoints;
 
-    if(direction == "DOWN" || direction == "RIGHT"){
+    if(direction ==Direction::DOWN || direction == Direction::RIGHT){
         startPoints["start"] = size - 1;
         startPoints["end"] = 0;
         startPoints["step"] = -1;
         startPoints["error"] = 0;
     }
-    else if(direction == "UP" || direction== "LEFT"){
+    else if(direction == Direction::UP || direction== Direction::LEFT){
         startPoints["start"] = 0;
         startPoints["end"] = size - 1;
         startPoints["step"] = 1;
@@ -90,14 +90,14 @@ std::map<std::string, int> Field::initStartPointsForMove(std::string direction){
     return startPoints;
 }
 
-int Field::moveCells(std::string direction){
+int Field::moveCells(Direction direction){
     std::map<std::string, int> startPoints = initStartPointsForMove(direction);
     int incrementForScore = 0;
-    std::cout << "incrementForScore: " << incrementForScore << std::endl;
+    //std::cout << "incrementForScore: " << incrementForScore << std::endl;
     if(startPoints["error"] != 0){
         return 0;
     }else{
-        if(direction == "UP" || direction == "DOWN"){
+        if(direction == Direction::UP || direction == Direction::DOWN){
             for(int i = startPoints["start"]; i != startPoints["end"] + startPoints["step"]; i += startPoints["step"]){
                 for(int j = 0; j < size; j++){
                     if(field[i][j].getFilledStatus()){
@@ -105,10 +105,10 @@ int Field::moveCells(std::string direction){
                         incrementForScore += merged;
                     }
                 }
-                std::cout << "incrementForScore: " << incrementForScore << std::endl;
-            }
+                //std::cout << "incrementForScore: " << incrementForScore << std::endl;
+            }          
         }
-        else if(direction == "LEFT" || direction == "RIGHT"){
+        else if(direction == Direction::LEFT || direction == Direction::RIGHT){
             for(int i = 0; i < size; i++){
                 for(int j = startPoints["start"]; j != startPoints["end"]  + startPoints["step"]; j += startPoints["step"]){
                     // std::cout << "current i/j: " << i << ' ' << j << std::endl;
@@ -125,7 +125,7 @@ int Field::moveCells(std::string direction){
                     }
                     //std::cout<< "j++" << std::endl;
                 }
-                std::cout << "incrementForScore: " << incrementForScore << std::endl;
+                //std::cout << "incrementForScore: " << incrementForScore << std::endl;
                 //std::cout<< "i++" << std::endl;
             }
         }
@@ -153,16 +153,16 @@ void Field::addNumbers(int howMany){
         }
     }
     //std::cout << "number of free cells: " << freeCells.size() << std::endl;
-    int howManywillCreated = howMany;
-    //std::cout << "how many will created: " << howManywillCreated << std::endl;
+    int numCellsToCreate = howMany;
+    //std::cout << "how many will created: " << numCellsToCreate << std::endl;
 
-    if(howManywillCreated > freeCells.size()){
-        howManywillCreated = freeCells.size();
+    if(numCellsToCreate > freeCells.size()){
+        numCellsToCreate = freeCells.size();
     }
 
-    if(howManywillCreated == 0){
+    if(numCellsToCreate == 0){
         return;
-    }else if(howManywillCreated == 1){
+    }else if(numCellsToCreate == 1){
         field[freeCells[0].first][freeCells[0].second].setCellValue();
         return;
     }else{
@@ -173,6 +173,6 @@ void Field::addNumbers(int howMany){
         std::pair<int,int> cellCords = freeCells[voter(generator)];
         field[cellCords.first][cellCords.second].setCellValue();
 
-        addNumbers(howManywillCreated-1);
+        addNumbers(numCellsToCreate-1);
     }
 }

@@ -15,7 +15,7 @@ public:
     void saveCurrentScoreToFile();
     void updateCurrentScore(int increment){currentScore += increment;}
 
-    void printScoreConsole(); //**//
+    void printScoreConsole(); //(this function just for cheking) //**//
 
 private:
     int bestScore;

@@ -50,6 +50,7 @@ else()
             message.cpp
             gameMenu.h
             defeatMenu.h
+            direction.h
 
         )
     endif()

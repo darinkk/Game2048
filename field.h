@@ -13,10 +13,10 @@ public:
     bool getMovableStatus(){return isMovable;} //**//
 
     void updateMovability(); //Update field movability
-    int moveCells(std::string dir); //Move all filled cells on field to direction dir
+    int moveCells(Direction dir); //Move all filled cells on field to direction dir
     void cleanField(); //Set all cells value as 0
     void createField(int fieldSize = 5); //Create field with new size //**//
-    void printFieldConsole(); //Print field to console //**//
+    void printFieldConsole(); //Print field to console (this function just for cheking) //**//
     void addNumbers(int howMany); //Add random numbers to random cells on field //**//
 
 private:
@@ -24,7 +24,7 @@ private:
     std::vector<std::vector<Cell>> field;
     bool isMovable;
 
-    std::map<std::string, int> initStartPointsForMove(std::string direction); //Initialize start/end points and step for move depending on the direction
+    std::map<std::string, int> initStartPointsForMove(Direction direction); //Initialize start/end points and step for move depending on the direction
     void initializeField(); //Create cells and set neighbors for cells
 
     void setSize(int fieldSize); //For resizing field //**//
