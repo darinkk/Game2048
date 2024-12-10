@@ -8,11 +8,13 @@ Field::Field(int fieldSize){
 }
 
 void Field::setSize(int fieldSize){
-    size = fieldSize;
+    if(size != fieldSize){
+        size = fieldSize;
 
-    field.resize(size);
-    for (int i = 0; i < size; i++) {
-        field[i].resize(size);
+        field.resize(size);
+        for (int i = 0; i < size; i++) {
+            field[i].resize(size);
+        }    size = fieldSize;
     }
 }
 
@@ -23,7 +25,7 @@ void Field::createField(int fieldSize){
 
 void Field::updateMovability(){
     /*
-    * Field is movable if at least ome cell is movable
+    * Field is movable if at least one cell is movable
     */
     for(int i = 0; i<size; i++){
         for(int j = 0; j < size; j++){
@@ -85,7 +87,7 @@ std::map<std::string, int> Field::initStartPointsForMove(Direction direction){
     }
     else{startPoints["error"] = -1;}
 
-    std::cout << "start i/j: " << startPoints["start"] << "   end i/j: " << startPoints["end"] << std::endl;
+    //std::cout << "start i/j: " << startPoints["start"] << "   end i/j: " << startPoints["end"] << std::endl;
 
     return startPoints;
 }
@@ -143,7 +145,7 @@ void Field::printFieldConsole(){
     }
 }
 
-void Field::addNumbers(int howMany){
+void Field::addNumbers(int cellsToCreate){
     std::vector<std::pair<int,int>> freeCells;
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
@@ -152,8 +154,13 @@ void Field::addNumbers(int howMany){
             }
         }
     }
+    std::cout << "Free: ";
+    for(int i = 0; i < freeCells.size();  i++){
+        std::cout << "(" << freeCells[i].first << "," << freeCells[i].second << ") ";
+    }
+    std::cout << std::endl;
     //std::cout << "number of free cells: " << freeCells.size() << std::endl;
-    int numCellsToCreate = howMany;
+    int numCellsToCreate = cellsToCreate;
     //std::cout << "how many will created: " << numCellsToCreate << std::endl;
 
     if(numCellsToCreate > freeCells.size()){
@@ -162,8 +169,8 @@ void Field::addNumbers(int howMany){
 
     if(numCellsToCreate == 0){
         return;
-    }else if(numCellsToCreate == 1){
-        field[freeCells[0].first][freeCells[0].second].setCellValue();
+    }else if(numCellsToCreate == 1 && freeCells.size() == 1){
+        field[freeCells[0].first][freeCells[0].second].setCellValue(); 
         return;
     }else{
         std::random_device random;
@@ -173,6 +180,8 @@ void Field::addNumbers(int howMany){
         std::pair<int,int> cellCords = freeCells[voter(generator)];
         field[cellCords.first][cellCords.second].setCellValue();
 
-        addNumbers(numCellsToCreate-1);
+        if(numCellsToCreate-1 > 0){
+            addNumbers(numCellsToCreate-1);
+        }
     }
 }
