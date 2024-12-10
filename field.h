@@ -19,7 +19,7 @@ public:
     void createField(int fieldSize = 5); //Create field with new size
     void printFieldConsole(); //Print field to console (this function just for cheking)
 
-    void addRandomNumbers(int numNumbersToCreate = 1);//Add random numbers to random cells on field
+    void FillFreeCells(int numCellsToFill = 1);//Add random numbers to random cells on field
 
 private:
     int size;

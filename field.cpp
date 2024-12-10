@@ -166,20 +166,20 @@ int Field::createRandomNummber(int min, int max){
     return voter(generator);
 }
 
-void Field::addRandomNumbers(int numNumbersToCreate){
+void Field::FillFreeCells(int numCellsToFill){
     std::list<std::pair<int,int>> cordsOfFreeCells = findFreeCells();
 
-    if(numNumbersToCreate > cordsOfFreeCells.size()){
-        numNumbersToCreate = cordsOfFreeCells.size();
+    if(numCellsToFill > cordsOfFreeCells.size()){
+        numCellsToFill = cordsOfFreeCells.size();
     }
 
-    if (numNumbersToCreate == 0){
+    if (numCellsToFill == 0){
         return;
-    }else if(numNumbersToCreate == 1 && cordsOfFreeCells.size() == 1){
+    }else if(numCellsToFill == 1 && cordsOfFreeCells.size() == 1){
         field[cordsOfFreeCells.begin()->first][cordsOfFreeCells.begin()->second].setCellValue();
         return;
     }else{
-        for(int i = 0; i < numNumbersToCreate; i++){
+        for(int i = 0; i < numCellsToFill; i++){
             int freeCellIndex = createRandomNummber(0, cordsOfFreeCells.size()-1);
 
             auto iterator = cordsOfFreeCells.begin();
