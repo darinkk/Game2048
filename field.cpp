@@ -145,43 +145,50 @@ void Field::printFieldConsole(){
     }
 }
 
-void Field::addNumbers(int cellsToCreate){
-    std::vector<std::pair<int,int>> freeCells;
+std::list<std::pair<int,int>> Field::findFreeCells(){
+    std::list<std::pair<int,int>> cordsOfFreeCells;
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
             if(!field[i][j].getFilledStatus()){
-                freeCells.push_back({i,j});
+                cordsOfFreeCells.push_back({i,j});
             }
         }
     }
-    std::cout << "Free: ";
-    for(int i = 0; i < freeCells.size();  i++){
-        std::cout << "(" << freeCells[i].first << "," << freeCells[i].second << ") ";
-    }
-    std::cout << std::endl;
-    //std::cout << "number of free cells: " << freeCells.size() << std::endl;
-    int numCellsToCreate = cellsToCreate;
-    //std::cout << "how many will created: " << numCellsToCreate << std::endl;
 
-    if(numCellsToCreate > freeCells.size()){
-        numCellsToCreate = freeCells.size();
+    return cordsOfFreeCells;
+}
+
+int Field::createRandomNummber(int min, int max){
+    std::random_device random;
+    std::mt19937 generator((random()));
+    std::uniform_int_distribution<> voter (min, max);
+
+    return voter(generator);
+}
+
+void Field::addRandomNumbers(int numNumbersToCreate){
+    std::list<std::pair<int,int>> cordsOfFreeCells = findFreeCells();
+
+    if(numNumbersToCreate > cordsOfFreeCells.size()){
+        numNumbersToCreate = cordsOfFreeCells.size();
     }
 
-    if(numCellsToCreate == 0){
+    if (numNumbersToCreate == 0){
         return;
-    }else if(numCellsToCreate == 1 && freeCells.size() == 1){
-        field[freeCells[0].first][freeCells[0].second].setCellValue(); 
+    }else if(numNumbersToCreate == 1 && cordsOfFreeCells.size() == 1){
+        field[cordsOfFreeCells.begin()->first][cordsOfFreeCells.begin()->second].setCellValue();
         return;
     }else{
-        std::random_device random;
-        std::mt19937 generator((random()));
-        std::uniform_int_distribution<> voter (0, freeCells.size()-1);
+        for(int i = 0; i < numNumbersToCreate; i++){
+            int freeCellIndex = createRandomNummber(0, cordsOfFreeCells.size()-1);
 
-        std::pair<int,int> cellCords = freeCells[voter(generator)];
-        field[cellCords.first][cellCords.second].setCellValue();
+            auto iterator = cordsOfFreeCells.begin();
+            std::advance(iterator,freeCellIndex);
+            std::pair<int,int> cellCords = *iterator;
 
-        if(numCellsToCreate-1 > 0){
-            addNumbers(numCellsToCreate-1);
+            field[cellCords.first][cellCords.second].setCellValue();
+
+            cordsOfFreeCells.erase(iterator);
         }
     }
 }
