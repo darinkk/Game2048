@@ -1,5 +1,7 @@
 #include "cell.h"
 #include <random>
+#include <algorithm>
+#include  "numberGenerator.h"
 
 Cell::Cell(int newValue){
     resetCell();
@@ -8,8 +10,6 @@ Cell::Cell(int newValue){
 
 void Cell::resetCell(){
     value = 0;
-    // xCoordinate = 0;
-    // yCoordinate = 0;
     isFilled = false;
 
     neighbors[Direction::UP] = nullptr;
@@ -18,99 +18,79 @@ void Cell::resetCell(){
     neighbors[Direction::RIGHT] = nullptr;
 }
 
-bool Cell::cellIsMovable(){
+bool Cell::isMovable(){
     /*
     * Cell is movable if have al least one neighbor with the same
     * value or the its value = 0
     */
-    for(const auto& pair: neighbors){
-        Cell *neighbor = pair.second;
-        if(neighbor != nullptr){
-            if(!neighbor->isFilled || neighbor->value == value){
-                return true;
-            }
-        }
+    auto iterator = std::find_if(neighbors.begin(), neighbors.end(),[this](std::pair<Direction, Cell*> neighbor){
+        return !neighbor.second->isFilled || neighbor.second->value == this->value;
+    });
+
+    if(iterator != neighbors.end()){
+        return true;
+    }else{
+        return false;
     }
-    return false;
 }
 
-int Cell::moveCellToDirection(Direction direction){
+int Cell::moveCell(Direction direction){
     /*
     * We move a cell if it`s movable.
     * We move a cell to direction while until it can move in the direction or
     * until it`s merged
     */
     Cell *neighbor = neighbors[direction];
-    //std::cout << "moving..." << "   " << std::endl;
     int mergedSum = 0;
     if(neighbor != nullptr){
         if(!neighbor->isFilled){
-            //std::cout << "moving to free cell..." << "   " << std::endl;
-            //std::cout << "neighbor value/status: " << neighbor->getCellValue() << "/" << neighbor->getFilledStatus()<< std::endl;
-            neighbor->setCellValue(value);
-            //neighbor->isFilled = true;
-            setCellValue(0);
-            //std::cout << "moved!" << std::endl;
-            mergedSum += neighbor->moveCellToDirection(direction);
-            return mergedSum;
+            neighbor->setValue(value);
+            setValue(0);
+            mergedSum += neighbor->moveCell(direction);
         }
-        else if(neighbor->getCellValue() == value){
-            // std::cout << "moving with merging..." << "   " << std::endl;
-            // std::cout << "neighbor value/status: " << neighbor->getCellValue() << "/" << neighbor->getFilledStatus()<< std::endl;
-            neighbor->setCellValue(getCellValue()*2);
-            setCellValue(0);
-            mergedSum += neighbor->getCellValue();
-            //std::cout << "moved!" << std::endl;
-            return mergedSum;
+        else if(neighbor->getValue() == value){
+            neighbor->setValue(getValue()*2);
+            setValue(0);
+            mergedSum += neighbor->getValue();
         }
-    }else{
-        //std::cout << "not moved!" << "   " << std::endl;
+        //I can move outside only return mergedSum  if i move setCellValue(0) andd/or
+        //mergedSum += neighbor->getValue() it will change hoe cells move
         return mergedSum;
     }
     return mergedSum;
 }
 
 void Cell::addNeighbor(Direction dir, Cell *neighbor){
-    //if(dir == Direction::UP|| dir == Direction::DOWN || dir == Direction::LEFT || dir == Direction::RIGHT){
-    neighbors[dir] = neighbor;
-    //}
+    if(directionValid(dir)){
+        neighbors[dir] = neighbor;
+    }
 }
 
 void Cell::updateFilledStatus(){
     isFilled = (value != 0);
 }
 
-Cell* Cell::getNeighbor(Direction dir){
-    //if(dir == Direction::UP || dir == Direction::DOWN || dir == Direction::LEFT || dir == Direction::RIGHT){
-    return neighbors[dir];
-    //}
-    //else{
-    //    return nullptr;
-    //}
+bool Cell::directionValid(Direction dir){
+    return dir == Direction::UP || dir == Direction::DOWN || dir == Direction::LEFT || dir == Direction::RIGHT;
 }
 
-void Cell::setCellValue(int newValue){
+Cell* Cell::getNeighbor(Direction dir){
+    if(directionValid(dir)){
+        return neighbors[dir];
+    }
+    else{
+       return nullptr;
+    }
+}
+
+void Cell::setValue(int newValue){
     value = newValue;
     updateFilledStatus();
 }
 
-void Cell::setCellValue(){
-    /*
-    * setCellValue() add random number from vector<int> values as cell value
-    */
+void Cell::fillWithStandartValue(){
     std::vector<int> values = {2,4};
-
-    std::random_device random;
-    std::mt19937 generator((random()));
-    std::uniform_int_distribution<> voter (0, values.size()-1);
-
-    value = values[voter(generator)];
-    // std::cout << "cell value: " << value << std::endl;
-    // for(int i = 0; i <= 10; i++){
-    //     int randomValue = values[voter(generator)];
-    //     std::cout << randomValue << ' ';
-    // }
-
+    value = values[NumberGenerator::createRandomNummber(0, values.size()-1)];
     updateFilledStatus();
 }
 

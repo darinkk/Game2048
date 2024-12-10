@@ -1,6 +1,7 @@
 #include "field.h"
 #include <random>
 #include <utility>
+#include "numberGenerator.h"
 
 Field::Field(int fieldSize){
     setSize(fieldSize);
@@ -12,9 +13,9 @@ void Field::setSize(int fieldSize){
         size = fieldSize;
 
         field.resize(size);
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i++){
             field[i].resize(size);
-        }    size = fieldSize;
+        }
     }
 }
 
@@ -30,7 +31,7 @@ void Field::updateMovability(){
     for(int i = 0; i<size; i++){
         for(int j = 0; j < size; j++){
             //Cell *cell = field[i][j];
-            if(field[i][j].cellIsMovable()){
+            if(field[i][j].isMovable()){
                 isMovable = true;
                 return;
             }
@@ -64,8 +65,7 @@ void Field::initializeField(){
 void Field::cleanField(){
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
-            field[i][j].setCellValue(0);
-            //field[i][j].updateFilledStatus();
+            field[i][j].setValue(0);
         }
     }
 }
@@ -92,10 +92,9 @@ std::map<std::string, int> Field::initStartPointsForMove(Direction direction){
     return startPoints;
 }
 
-int Field::moveCells(Direction direction){
+int Field::moveAllCells(Direction direction){
     std::map<std::string, int> startPoints = initStartPointsForMove(direction);
     int incrementForScore = 0;
-    //std::cout << "incrementForScore: " << incrementForScore << std::endl;
     if(startPoints["error"] != 0){
         return 0;
     }else{
@@ -103,32 +102,20 @@ int Field::moveCells(Direction direction){
             for(int i = startPoints["start"]; i != startPoints["end"] + startPoints["step"]; i += startPoints["step"]){
                 for(int j = 0; j < size; j++){
                     if(field[i][j].getFilledStatus()){
-                        int merged = field[i][j].moveCellToDirection(direction);
+                        int merged = field[i][j].moveCell(direction);
                         incrementForScore += merged;
                     }
                 }
-                //std::cout << "incrementForScore: " << incrementForScore << std::endl;
             }          
         }
         else if(direction == Direction::LEFT || direction == Direction::RIGHT){
             for(int i = 0; i < size; i++){
                 for(int j = startPoints["start"]; j != startPoints["end"]  + startPoints["step"]; j += startPoints["step"]){
-                    // std::cout << "current i/j: " << i << ' ' << j << std::endl;
-                    // if(field[i][j].getNeighbor(direction) != nullptr){
-                    //     std::cout << "neighbor: " << field[i][j].getNeighbor(direction) << std::endl;
-                    // }else{
-                    //     std::cout << "neighbor: " << "nullptr" << std::endl;
-                    // }
-
                     if(field[i][j].getFilledStatus()){
-                        int merged = field[i][j].moveCellToDirection(direction);
+                        int merged = field[i][j].moveCell(direction);
                         incrementForScore += merged;
-                        //std::cout << "incrementForScore: " << incrementForScore << std::endl;
                     }
-                    //std::cout<< "j++" << std::endl;
                 }
-                //std::cout << "incrementForScore: " << incrementForScore << std::endl;
-                //std::cout<< "i++" << std::endl;
             }
         }
         return incrementForScore;
@@ -139,7 +126,7 @@ int Field::moveCells(Direction direction){
 void Field::printFieldConsole(){
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
-            std::cout << field[i][j].getCellValue() << " ";
+            std::cout << field[i][j].getValue() << " ";
         }
         std::cout << std::endl;
     }
@@ -154,16 +141,7 @@ std::list<std::pair<int,int>> Field::findFreeCells(){
             }
         }
     }
-
     return cordsOfFreeCells;
-}
-
-int Field::createRandomNummber(int min, int max){
-    std::random_device random;
-    std::mt19937 generator((random()));
-    std::uniform_int_distribution<> voter (min, max);
-
-    return voter(generator);
 }
 
 void Field::FillFreeCells(int numCellsToFill){
@@ -176,17 +154,17 @@ void Field::FillFreeCells(int numCellsToFill){
     if (numCellsToFill == 0){
         return;
     }else if(numCellsToFill == 1 && cordsOfFreeCells.size() == 1){
-        field[cordsOfFreeCells.begin()->first][cordsOfFreeCells.begin()->second].setCellValue();
+        field[cordsOfFreeCells.begin()->first][cordsOfFreeCells.begin()->second].fillWithStandartValue();
         return;
     }else{
         for(int i = 0; i < numCellsToFill; i++){
-            int freeCellIndex = createRandomNummber(0, cordsOfFreeCells.size()-1);
+            int freeCellIndex = NumberGenerator::createRandomNummber(0, cordsOfFreeCells.size()-1);
 
             auto iterator = cordsOfFreeCells.begin();
             std::advance(iterator,freeCellIndex);
             std::pair<int,int> cellCords = *iterator;
 
-            field[cellCords.first][cellCords.second].setCellValue();
+            field[cellCords.first][cellCords.second].fillWithStandartValue();
 
             cordsOfFreeCells.erase(iterator);
         }
