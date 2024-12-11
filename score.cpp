@@ -5,7 +5,7 @@
 Score::Score(){
     //bestScore = 0;
     currentScore = 0;
-    setScoreFile();
+    createScoreStorage();
     uploadBestScore();
 }
 
@@ -17,16 +17,16 @@ Score::Score(std::string specialPath){
     std::filesystem::path spcPath = specialPath;
     if(std::filesystem::exists(spcPath)){
         std::filesystem::create_directories(spcPath / "data");
-        pathToFile = spcPath / "data/scores.txt";
-        std::cout << "Path to score file: " << pathToFile << std::endl;
+        pathToStorage = spcPath / "data/scores.txt";
+        std::cout << "Path to score file: " << pathToStorage << std::endl;
     }else{
-        setScoreFile();
+        createScoreStorage();
     }
 
     uploadBestScore();
 }
 
-void Score::setScoreFile(){
+void Score::createScoreStorage(){
     try{
         std::filesystem::path pathToRun = std::filesystem::current_path();
         //std::cout << "Path to project: " << pathToProject << std::endl;
@@ -41,8 +41,8 @@ void Score::setScoreFile(){
                 std::filesystem::path pathToFloder = pathToProject / "data";
                 std::filesystem::create_directories(pathToFloder);
 
-                pathToFile = pathToFloder / "scores.txt";
-                std::cout << "Path to score file: " << pathToFile << std::endl;
+                pathToStorage = pathToFloder / "scores.txt";
+                std::cout << "Path to score storage: " << pathToStorage << std::endl;
                 break;
             }
             pathToRun = pathToRun.parent_path();
@@ -53,36 +53,36 @@ void Score::setScoreFile(){
     }
 }
 
-void Score::saveCurrentScoreToFile(){
+void Score::saveCurrentScore(){
     if(currentScore != 0){
-        scoreFile.open(pathToFile, std::ios::app);
-        if(!scoreFile.is_open()){
+        scoreStorage.open(pathToStorage, std::ios::app);
+        if(!scoreStorage.is_open()){
             std::cerr << "File not open and score not saved" << std::endl;
             return;
         }
         std::cout << "File is open..." << std::endl;
 
 
-        scoreFile << "," << currentScore;
+        scoreStorage << "," << currentScore;
 
 
-        scoreFile.close();
+        scoreStorage.close();
         std::cout << "File is closed" << std::endl;
     }
 }
 
 std::vector<int> Score::readScoresToInt(){
-    scoreFile.open(pathToFile, std::ios::in);
-    if(!scoreFile.is_open()){
+    scoreStorage.open(pathToStorage, std::ios::in);
+    if(!scoreStorage.is_open()){
         std::cerr << "File not open and score not saved" << std::endl;
     }
     std::cout << "File is open..." << std::endl;
 
     std::string scoresSrt;
-    std::getline(scoreFile, scoresSrt);
+    std::getline(scoreStorage, scoresSrt);
     //std::cout << scoresSrt << std::endl;
 
-    scoreFile.close();
+    scoreStorage.close();
     std::cout << "File is closed" << std::endl;
 
     std::vector<int> scoresInt;
@@ -109,7 +109,9 @@ std::vector<int> Score::readScoresToInt(){
 }
 
 void Score::uploadBestScore(){
-    std::vector<int> scores = readScoresToInt();
+    std::vector<int> scores;
+    scores.clear();
+    scores = readScoresToInt();
     for(int i : scores){
         if(i > bestScore){
             bestScore = i;
@@ -121,4 +123,9 @@ void Score::uploadBestScore(){
 void Score::printScoreConsole(){
     std::cout << "Score: " << currentScore << std::endl;
     std::cout << "Best score: " << bestScore << std::endl;
+}
+
+void Score::resetScore(){
+    currentScore = 0;
+    uploadBestScore();
 }

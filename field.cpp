@@ -2,6 +2,7 @@
 #include <random>
 #include <utility>
 #include "numberGenerator.h"
+#include <algorithm>
 
 Field::Field(int fieldSize){
     setSize(fieldSize);
@@ -22,41 +23,28 @@ void Field::setSize(int fieldSize){
 void Field::createField(int fieldSize){
     setSize(fieldSize);
     initializeField();
+    cleanField();
 }
 
 void Field::updateMovability(){
     /*
     * Field is movable if at least one cell is movable
     */
-    for(int i = 0; i<size; i++){
-        for(int j = 0; j < size; j++){
-            //Cell *cell = field[i][j];
-            if(field[i][j].isMovable()){
-                isMovable = true;
-                return;
-            }
-        }
-    }
-    isMovable = false;
+    isMovable = std::any_of(&field[0][0], &field[0][0] + size * size, [](Cell& cell) {
+        return cell.isMovable(); });
 }
 
 void Field::initializeField(){
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
-            field[i][j] = Cell();
 
             if(i-1>=0){ field[i][j].addNeighbor(Direction::UP, &field[i-1][j]); }
-            else{ field[i][j].addNeighbor(Direction::UP, nullptr); }
 
             if(i+1 < size){ field[i][j].addNeighbor(Direction::DOWN, &field[i+1][j]); }
-            else{ field[i][j].addNeighbor(Direction::DOWN, nullptr); }
 
             if(j-1 >= 0){ field[i][j].addNeighbor(Direction::LEFT, &field[i][j-1]); }
-            else{ field[i][j].addNeighbor(Direction::LEFT, nullptr); }
 
             if(j+1 < size){ field[i][j].addNeighbor(Direction::RIGHT, &field[i][j+1]); }
-            else{ field[i][j].addNeighbor(Direction::RIGHT, nullptr); }
-
         }
     }
     isMovable = true;
@@ -64,62 +52,52 @@ void Field::initializeField(){
 
 void Field::cleanField(){
     for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            field[i][j].setValue(0);
-        }
+        std::for_each(&field[i][0], &field[i][0] + size, [](Cell& cell) {
+            cell.setValue(0); });
     }
 }
 
-std::map<std::string, int> Field::initStartPointsForMove(Direction direction){
-    std::map<std::string, int> startPoints;
-
-    if(direction ==Direction::DOWN || direction == Direction::RIGHT){
-        startPoints["start"] = size - 1;
-        startPoints["end"] = 0;
-        startPoints["step"] = -1;
-        startPoints["error"] = 0;
+const int Field::startIndex(Direction dir){
+    if(dir == Direction::DOWN || dir == Direction::RIGHT){
+        return size - 1;
+    }else{
+        return 0;
     }
-    else if(direction == Direction::UP || direction== Direction::LEFT){
-        startPoints["start"] = 0;
-        startPoints["end"] = size - 1;
-        startPoints["step"] = 1;
-        startPoints["error"] = 0;
+}
+
+const int Field::endIndex(Direction dir){
+    if(dir == Direction::DOWN || dir == Direction::RIGHT){
+        return 0;
+    }else{
+        return size - 1;
     }
-    else{startPoints["error"] = -1;}
+}
 
-    //std::cout << "start i/j: " << startPoints["start"] << "   end i/j: " << startPoints["end"] << std::endl;
-
-    return startPoints;
+const int Field::step(Direction dir){
+    if(dir == Direction::DOWN || dir == Direction::RIGHT){
+        return -1;
+    }else{
+        return 1;
+    }
 }
 
 int Field::moveAllCells(Direction direction){
-    std::map<std::string, int> startPoints = initStartPointsForMove(direction);
     int incrementForScore = 0;
-    if(startPoints["error"] != 0){
-        return 0;
-    }else{
-        if(direction == Direction::UP || direction == Direction::DOWN){
-            for(int i = startPoints["start"]; i != startPoints["end"] + startPoints["step"]; i += startPoints["step"]){
-                for(int j = 0; j < size; j++){
+        for(int i = startIndex(direction); i != endIndex(direction) + step(direction); i += step(direction)){
+            for(int j = 0; j < size; j++){
+                if(direction == Direction::UP || direction == Direction::DOWN){
                     if(field[i][j].getFilledStatus()){
                         int merged = field[i][j].moveCell(direction);
                         incrementForScore += merged;
                     }
-                }
-            }          
-        }
-        else if(direction == Direction::LEFT || direction == Direction::RIGHT){
-            for(int i = 0; i < size; i++){
-                for(int j = startPoints["start"]; j != startPoints["end"]  + startPoints["step"]; j += startPoints["step"]){
-                    if(field[i][j].getFilledStatus()){
-                        int merged = field[i][j].moveCell(direction);
+                }else if(direction == Direction::LEFT || direction == Direction::RIGHT){
+                    if(field[j][i].getFilledStatus()){
+                        int merged = field[j][i].moveCell(direction);
                         incrementForScore += merged;
                     }
                 }
             }
         }
-        return incrementForScore;
-    }
     return incrementForScore;
 }
 
@@ -132,41 +110,36 @@ void Field::printFieldConsole(){
     }
 }
 
-std::list<std::pair<int,int>> Field::findFreeCells(){
-    std::list<std::pair<int,int>> cordsOfFreeCells;
+std::vector<Cell*> Field::findFreeCells(){
+    std::vector<Cell*> iterators;
     for(int i = 0; i < size; i++){
         for(int j = 0; j < size; j++){
             if(!field[i][j].getFilledStatus()){
-                cordsOfFreeCells.push_back({i,j});
+                iterators.push_back(&field[i][j]);
             }
         }
     }
-    return cordsOfFreeCells;
+    return iterators;
 }
 
-void Field::FillFreeCells(int numCellsToFill){
-    std::list<std::pair<int,int>> cordsOfFreeCells = findFreeCells();
+void Field::FillFreeCells(int numCells){
+    std::vector<Cell*> FreeCellsIterators = findFreeCells();
 
-    if(numCellsToFill > cordsOfFreeCells.size()){
-        numCellsToFill = cordsOfFreeCells.size();
+    if(numCells > FreeCellsIterators.size()){
+        numCells = FreeCellsIterators.size();
     }
 
-    if (numCellsToFill == 0){
+    if (numCells == 0){
         return;
-    }else if(numCellsToFill == 1 && cordsOfFreeCells.size() == 1){
-        field[cordsOfFreeCells.begin()->first][cordsOfFreeCells.begin()->second].fillWithStandartValue();
+    }else if(numCells == 1 && FreeCellsIterators.size() == 1){
+        FreeCellsIterators[0]->fillWithStandartValue();
         return;
     }else{
-        for(int i = 0; i < numCellsToFill; i++){
-            int freeCellIndex = NumberGenerator::createRandomNummber(0, cordsOfFreeCells.size()-1);
+        for(int i = 0; i < numCells; i++){
+            int freeCellIndex = NumberGenerator::createRandomNummber(0, FreeCellsIterators.size()-1);
 
-            auto iterator = cordsOfFreeCells.begin();
-            std::advance(iterator,freeCellIndex);
-            std::pair<int,int> cellCords = *iterator;
-
-            field[cellCords.first][cellCords.second].fillWithStandartValue();
-
-            cordsOfFreeCells.erase(iterator);
+            FreeCellsIterators[freeCellIndex]->fillWithStandartValue();
+            FreeCellsIterators.erase(FreeCellsIterators.begin() + freeCellIndex);
         }
     }
 }

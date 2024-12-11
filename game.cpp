@@ -1,5 +1,5 @@
 #include "game.h"
-
+#include <algorithm>
 
 Game::Game(int fieldSize){
     gameField.createField(fieldSize);
@@ -7,17 +7,20 @@ Game::Game(int fieldSize){
     loseStatus = false;
 }
 
+const void Game::startGame(int fieldSize){
+    gameField.createField(fieldSize);
+    int numberOfStartsValues = 2;
+    gameField.FillFreeCells(numberOfStartsValues);
+
+    gameField.printFieldConsole();
+    gameScore.printScoreConsole();
+}
+
 void Game::updateWinStatus(){
-    std::vector<std::vector<Cell>>& currentField = gameField.getField();
     for(int i = 0; i < gameField.getSize(); i++){
-        for(int j = 0; j < gameField.getSize(); j++){
-            if(currentField[i][j].haveWinValue()){
-                winStatus = true;
-                return;
-            }
-        }
+        winStatus = std::any_of(&gameField.getField()[i][0], &gameField.getField()[i][0] + gameField.getSize(), [](Cell& cell) {
+            return cell.haveWinValue(); });
     }
-    winStatus = false;
 }
 
 void Game::updateLoseStatus(){
@@ -44,19 +47,11 @@ void Game::moveCellsOnField(Direction direction){
     }
 
     if(fieldWasChanged){
-        gameField.FillFreeCells();
+        gameField.FillFreeCells(1);
     }
 
     updateWinStatus();
     updateLoseStatus();
 }
 
-void Game::startGame(int fieldSize){
-    gameField.createField(fieldSize);
-    int numberOfStartsValues = 2;
-    gameField.FillFreeCells(numberOfStartsValues);
 
-    gameField.printFieldConsole();
-    gameScore.printScoreConsole();
-
-}

@@ -27,11 +27,8 @@ bool Cell::isMovable(){
         return !neighbor.second->isFilled || neighbor.second->value == this->value;
     });
 
-    if(iterator != neighbors.end()){
-        return true;
-    }else{
-        return false;
-    }
+    return iterator != neighbors.end();
+
 }
 
 int Cell::moveCell(Direction direction){
