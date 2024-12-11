@@ -51,6 +51,13 @@ else()
             gameMenu.h
             defeatMenu.h
             direction.h
+            convertor.h
+            convertor.cpp
+            victoryGameMenu.h
+            victoryGameMenu.cpp
+            gameMenu.cpp
+            numberGenerator.h
+            numberGenerator.cpp
 
         )
     endif()
