@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
-#include "gameMenu.h"
+//#include "gameMenu.h"
 #include "victoryGameMenu.h"
+#include "defeatGameMenu.h"
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,6 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("2048");
     setupUI();
     setMouseTracking(true);
+
+    playAfterrWin = false;
 }
 
 MainWindow::~MainWindow()
@@ -129,6 +133,17 @@ void MainWindow::cleanLayout(QLayout *layout){
 void MainWindow::updateUI(){
     updateFieldLabels();
     updateScoresLabels();
+    if(!playAfterrWin){
+        if(game.isWin()){
+            //game.endGame();
+            showMenu(game.isWin());
+            playAfterrWin = true;
+        }
+    }
+    if(game.isLose()){
+        //game.endGame();
+        showMenu(!game.isLose());
+    }
 }
 
 void MainWindow::updateFieldLabels(){
@@ -159,20 +174,36 @@ void MainWindow::updateScoresLabels(){
 
 void MainWindow::onStartButtonClicked(){
     game.startGame();
+    playAfterrWin = false;
     updateUI();
     cleanLayout(buttonsLayout);
     setupRestartButton();
+}
 
+void MainWindow::showMenu(bool isWin){
+    if(isWin){
+        VictoryGameMenu *victoryMenu = new VictoryGameMenu(this);
 
-    VictoryGameMenu meenu(this);
-    //meenu.setModal(true);
-    //meenu.exec();
+        connect(victoryMenu, &VictoryGameMenu::startNewGameSignal, this, &MainWindow::onRestartButtonClicked);
+
+        victoryMenu->exec();
+        delete victoryMenu;
+    }else{
+        DefeatGameMenu *defeatMenu = new DefeatGameMenu(this);
+        connect(defeatMenu, &DefeatGameMenu::startNewGameSignal, this, &MainWindow::onRestartButtonClicked);
+
+        defeatMenu->exec();
+        delete defeatMenu;
+    }
 }
 
 void MainWindow::onRestartButtonClicked(){
+    game.endGame();
     int fieldOfLabelsSize = sqrt(fieldGLayout->count());
-    game.startGame(fieldOfLabelsSize);
     game.getScore().resetScore();
+    playAfterrWin = false;
+    game.startGame(fieldOfLabelsSize);
+
     updateUI();
 }
 
@@ -188,6 +219,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event){ //It can be better
     }
 
     updateUI();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event){
+    game.endGame();
 }
 
 // void MainWindow::mouseMoveEvent(QMouseEvent *event) {
