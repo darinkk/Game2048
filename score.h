@@ -22,6 +22,8 @@ private:
     std::vector<int> readScoresToInt(); //Read score history to vector<int>
     void uploadBestScore(); //Find and set best score
 
+    std::string getDefaultFilePath();
+
 private:
     int bestScore;
     int currentScore;

@@ -1,9 +1,10 @@
 #include <iostream>
 #include "score.h"
+#include <cstdlib>
 
 
 Score::Score(){
-    //bestScore = 0;
+    bestScore = 0;
     currentScore = 0;
     createScoreStorage();
     uploadBestScore();
@@ -28,28 +29,61 @@ Score::Score(std::string specialPath){
 
 void Score::createScoreStorage(){
     try{
-        std::filesystem::path pathToRun = std::filesystem::current_path();
-        //std::cout << "Path to project: " << pathToProject << std::endl;
+        std::filesystem::path DefaultFilePath = getDefaultFilePath();
+        std::filesystem::path pathToFloder = DefaultFilePath / "2048_data";
+        std::filesystem::create_directories(pathToFloder);
+        pathToStorage = pathToFloder / "scores.txt";
+        std::cout << "Path to score storage: " << pathToStorage << std::endl;
 
-        while(pathToRun != pathToRun.root_path()){ //Looking for project directory (it will be mistake if CMakeLists.txt is deleted)
-            std::cout << "Current path: " << pathToRun << std::endl;
-            if(std::filesystem::exists(pathToRun / "CMakeLists.txt")){
-
-                std::filesystem::path pathToProject = pathToRun;
-                std::cout << "Path to project: " << pathToProject << std::endl;
-
-                std::filesystem::path pathToFloder = pathToProject / "data";
-                std::filesystem::create_directories(pathToFloder);
-
-                pathToStorage = pathToFloder / "scores.txt";
-                std::cout << "Path to score storage: " << pathToStorage << std::endl;
-                break;
-            }
-            pathToRun = pathToRun.parent_path();
+        scoreStorage.open(pathToStorage, std::ios::app);
+        if(!scoreStorage.is_open()){
+            std::cerr << "File not open and score not saved" << std::endl;
+            return;
         }
+        std::cout << "File is open..." << std::endl;
+        scoreStorage << 0;
+        scoreStorage.close();
+        std::cout << "File is closed" << std::endl;
+
+    //     std::filesystem::path pathToRun = std::filesystem::current_path();
+    //     //std::cout << "Path to project: " << pathToProject << std::endl;
+
+    //     while(pathToRun != pathToRun.root_path()){ //Looking for project directory (it will be mistake if CMakeLists.txt is deleted)
+    //         std::cout << "Current path: " << pathToRun << std::endl;
+    //         if(std::filesystem::exists(pathToRun / "CMakeLists.txt")){
+
+    //             std::filesystem::path pathToProject = pathToRun;
+    //             std::cout << "Path to project: " << pathToProject << std::endl;
+
+    //             std::filesystem::path pathToFloder = pathToProject / "data";
+    //             std::filesystem::create_directories(pathToFloder);
+
+    //             pathToStorage = pathToFloder / "scores.txt";
+    //             std::cout << "Path to score storage: " << pathToStorage << std::endl;
+    //             break;
+    //         }
+    //         pathToRun = pathToRun.parent_path();
+    //     }
     }
     catch(const std::filesystem::filesystem_error &err){
         std::cerr << "File processing error: " << err.what() << std::endl;
+    }
+}
+
+std::string Score::getDefaultFilePath(){
+    const char* homeDir;
+
+    #ifdef _WIN32
+        homeDir = getenv("USERPROFFILE");
+    #elif __linux__
+        homeDir = getenv("HOME");
+    #endif
+
+    if(homeDir == nullptr){
+        std::cout << "No possible to get path to home directory" << std::endl;
+        return "";
+    }else{
+        return homeDir;
     }
 }
 
@@ -85,13 +119,15 @@ std::vector<int> Score::readScoresToInt(){
     scoreStorage.close();
     std::cout << "File is closed" << std::endl;
 
+    if(scoresSrt.empty()){return {0};}
     std::vector<int> scoresInt;
     int start = 0;
     int end = scoresSrt.find(',');
     while(end != std::string::npos){
         std::string value = scoresSrt.substr(start, end - start);
-        scoresInt.push_back(std::stoi(value));
-
+        if(!value.empty()){
+            scoresInt.push_back(std::stoi(value));
+        }
         start = end + 1;
         end = scoresSrt.find(',', start);
     }
@@ -113,7 +149,7 @@ void Score::uploadBestScore(){
     scores.clear();
     scores = readScoresToInt();
     for(int i : scores){
-        if(i > bestScore){
+        if(i >= bestScore){
             bestScore = i;
         }
     }
