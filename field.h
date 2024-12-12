@@ -9,11 +9,10 @@ public:
     Field(int fieldSize = 5);
     int getSize(){return size;}
     std::vector<std::vector<Cell>> getField(){return field;}
-    bool getMovableStatus(){return isMovable;}
+    bool getMovableStatus(){updateMovability(); return isMovable;}
     int moveAllCells(Direction dir);
     void cleanField();
     void createField(int fieldSize = 5);
-    void printFieldConsole(); //Print field to console (this function just for cheking)
     void FillFreeCells(int numCells);//Add random numbers to random cells on field
 
 private:

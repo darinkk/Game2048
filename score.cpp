@@ -120,11 +120,6 @@ void Score::uploadBestScore(){
     std::cout << "Best score: " << bestScore << std::endl;
 }
 
-void Score::printScoreConsole(){
-    std::cout << "Score: " << currentScore << std::endl;
-    std::cout << "Best score: " << bestScore << std::endl;
-}
-
 void Score::resetScore(){
     currentScore = 0;
     uploadBestScore();

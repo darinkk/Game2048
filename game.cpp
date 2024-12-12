@@ -12,19 +12,39 @@ const void Game::startGame(int fieldSize){
     int numberOfStartsValues = 2;
     gameField.FillFreeCells(numberOfStartsValues);
 
-    gameField.printFieldConsole();
-    gameScore.printScoreConsole();
+    // winStatus = false;
+    // loseStatus = false;
+    updateWinStatus();
+    updateLoseStatus();
+
+}
+
+void Game::endGame(){
+    if(gameScore.getCurrentScore() > 0){
+        gameScore.saveCurrentScore();
+    }
+    gameField.cleanField();
+    updateWinStatus();
+    updateLoseStatus();
 }
 
 void Game::updateWinStatus(){
+    winStatus = false;
+    //should not be loop here
     for(int i = 0; i < gameField.getSize(); i++){
-        winStatus = std::any_of(&gameField.getField()[i][0], &gameField.getField()[i][0] + gameField.getSize(), [](Cell& cell) {
-            return cell.haveWinValue(); });
+        for(int j = 0; j < gameField.getSize(); j++){
+            if(gameField.getField()[i][j].haveWinValue()){
+                winStatus = true;
+                break;
+            }
+        }
+        // winStatus = std::any_of(&gameField.getField()[i][0], &gameField.getField()[i][0] + gameField.getSize(),
+        //     [](Cell& cell) { return cell.haveWinValue(); });
     }
 }
 
 void Game::updateLoseStatus(){
-    loseStatus = (!gameField.getMovableStatus());
+    loseStatus = !gameField.getMovableStatus();
 }
 
 void Game::moveCellsOnField(Direction direction){

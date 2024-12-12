@@ -15,7 +15,6 @@ public:
     //void setScoreFile(std::string specialPath){specialPath = way;}
     void saveCurrentScore();
     void updateCurrentScore(int increment){currentScore += increment;}
-    void printScoreConsole(); //(this function just for cheking) //**//
     void resetScore();
 
 private:

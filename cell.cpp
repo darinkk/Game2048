@@ -1,7 +1,8 @@
 #include "cell.h"
 #include <random>
 #include <algorithm>
-#include  "numberGenerator.h"
+#include "numberGenerator.h"
+
 
 Cell::Cell(int newValue){
     resetCell();
@@ -23,12 +24,15 @@ bool Cell::isMovable(){
     * Cell is movable if have al least one neighbor with the same
     * value or the its value = 0
     */
+
     auto iterator = std::find_if(neighbors.begin(), neighbors.end(),[this](std::pair<Direction, Cell*> neighbor){
-        return !neighbor.second->isFilled || neighbor.second->value == this->value;
+        if(neighbor.second){
+            return !neighbor.second->getFilledStatus() || neighbor.second->getValue() == this->value ;
+        }
+        return false;
     });
 
     return iterator != neighbors.end();
-
 }
 
 int Cell::moveCell(Direction direction){
