@@ -30,8 +30,19 @@ void Field::updateMovability(){
     /*
     * Field is movable if at least one cell is movable
     */
-    isMovable = std::any_of(&field[0][0], &field[0][0] + size * size, [](Cell& cell) {
-        return cell.isMovable(); });
+    isMovable = false;
+    //shouid not be loop here
+    for(int i = 0; i < size; i++){
+        for(int j = 0; j < size; j++){
+            if(field[i][j].isMovable()){
+                isMovable = true;
+                break;
+            }
+        }
+        // isMovable = std::any_of(&field[0][0], &field[0][0] + size * size, [](Cell& cell) {
+        //     return cell.isMovable(); });
+    }
+
 }
 
 void Field::initializeField(){
@@ -98,16 +109,7 @@ int Field::moveAllCells(Direction direction){
                 }
             }
         }
-    return incrementForScore;
-}
-
-void Field::printFieldConsole(){
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < size; j++){
-            std::cout << field[i][j].getValue() << " ";
-        }
-        std::cout << std::endl;
-    }
+    return incrementForScore;       
 }
 
 std::vector<Cell*> Field::findFreeCells(){

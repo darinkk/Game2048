@@ -42,15 +42,21 @@ else()
             field.h
             score.h
             game.h
-            message.h
             cell.cpp
             field.cpp
             game.cpp
             score.cpp
-            message.cpp
             gameMenu.h
-            defeatMenu.h
             direction.h
+            convertor.h
+            convertor.cpp
+            victoryGameMenu.h
+            victoryGameMenu.cpp
+            gameMenu.cpp
+            numberGenerator.h
+            numberGenerator.cpp
+            defeatGameMenu.h
+            defeatGameMenu.cpp
 
         )
     endif()

@@ -1,18 +1,20 @@
 #ifndef GAMEMENU_H
 #define GAMEMENU_H
 
-#include "message.h"
-#include <string>
-#include <QMenu>
+#include <QMessageBox>
+#include <QPushButton>
+// #include "victoryGameMenu.h"
+// #include "defeatGameMenu.h"
 
-//This class can be changed :)
-class GameMenu{
+class GameMenu : public QMessageBox{
+    Q_OBJECT
 public:
-    Menu();
-    Menu(std::string mes){message.changeMessage(mes);}
-    virtual void showMenu() = 0;
+    GameMenu(QWidget *parent = nullptr);
+    ~GameMenu() = default;
+
 private:
-    Message message;
+    virtual void setupUI() = 0;
+
 };
 
 #endif // GAMEMENU_H

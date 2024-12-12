@@ -15,13 +15,14 @@ public:
     //void setScoreFile(std::string specialPath){specialPath = way;}
     void saveCurrentScore();
     void updateCurrentScore(int increment){currentScore += increment;}
-    void printScoreConsole(); //(this function just for cheking) //**//
     void resetScore();
 
 private:
     void createScoreStorage(); //Create directory "data" and file score.txt in game2028/data
     std::vector<int> readScoresToInt(); //Read score history to vector<int>
     void uploadBestScore(); //Find and set best score
+
+    std::string getDefaultFilePath();
 
 private:
     int bestScore;
