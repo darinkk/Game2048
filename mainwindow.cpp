@@ -75,6 +75,8 @@ void MainWindow::setupStartButton(/*QVBoxLayout *buttonsLayout*/){
     startButton->setFixedHeight(35);
 
     buttonsLayout->addWidget(startButton);
+
+
 }
 
 void MainWindow::setupRestartButton(){
@@ -223,6 +225,16 @@ void MainWindow::keyPressEvent(QKeyEvent *event){ //It can be better
 
 void MainWindow::closeEvent(QCloseEvent *event){
     game.endGame();
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event){
+    mouseCoords = {event->pos().x(), event->pos().y()};
+    //std::cout << "clik: " << mouseCoords.first << " " << mouseCoords.second << std::endl;
+}
+void MainWindow::mouseReleaseEvent(QMouseEvent *event){
+    std::pair<int,int> newMouseCoords = {event->pos().x(), event->pos().y()};
+    game.moveCellsOnField(Convertor::convertCoordsToDir({mouseCoords, newMouseCoords}));
+    updateUI();
 }
 
 // void MainWindow::mouseMoveEvent(QMouseEvent *event) {

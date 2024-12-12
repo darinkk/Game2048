@@ -54,8 +54,8 @@ private:
     void keyPressEvent(QKeyEvent *event) override;
     void closeEvent(QCloseEvent *event) override;
 
-
-    //void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
     void showMenu(bool isWin);
 
@@ -66,6 +66,7 @@ private:
     Game game;
 
     bool playAfterrWin;
+    std::pair<int,int> mouseCoords;
 
     /*UI elements*/
     // std::vector<std::vector<QLabel*>> boxesForCells;
