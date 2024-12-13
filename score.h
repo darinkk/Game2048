@@ -10,8 +10,8 @@ class Score{
 public:
     Score();
     Score(std::string specialPath);
-    int getBestScore(){return bestScore;}
-    int getCurrentScore(){return currentScore;}
+    int getBestScore() const {return bestScore;}
+    int getCurrentScore() const {return currentScore;}
     //void setScoreFile(std::string specialPath){specialPath = way;}
     void saveCurrentScore();
     void updateCurrentScore(int increment){currentScore += increment;}

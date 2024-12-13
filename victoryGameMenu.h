@@ -9,14 +9,13 @@ class VictoryGameMenu : public  GameMenu{
 public:
     VictoryGameMenu(QWidget *parent = nullptr);
     ~VictoryGameMenu() = default;
+signals:
+    void startNewGameSignal();
 private:
     void setupUI() override;
 private:
     QPushButton *startNewGameButton;
     QPushButton *continueGameButton;
-signals:
-    void startNewGameSignal();
-
 };
 
 #endif // VICTORYGAMEMENU_H

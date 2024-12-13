@@ -8,14 +8,14 @@
 class Game{
 public:
     Game(int fieldSize = 5);
-    const void startGame(int fieldSize = 5);
+    void startGame(int fieldSize = 5);
     void endGame();
     int getSize(){return gameField.getSize();}
     std::vector<std::vector<Cell>> getFieldCells(){return gameField.getField();}
     Score& getScore(){return gameScore;}
-    void moveCellsOnField(Direction direction);
-    const bool isLose(){return loseStatus;}
-    const bool isWin(){return winStatus;}
+    void move(Direction direction);
+    bool isLose() const {return loseStatus;}
+    bool isWin() const {return winStatus;}
 
 private:
     void updateScore(int increment){gameScore.updateCurrentScore(increment);}

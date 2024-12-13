@@ -11,12 +11,6 @@ int main(int argc, char *argv[])
     w.show();
     std::cout << "Running..." << std::endl;
 
-    //Score score;
-    //score.saveCurrentScoreToFile();
-
-    // Cell cell;
-    // cell.setCellValue();
-
     Game game;
     game.startGame();
 

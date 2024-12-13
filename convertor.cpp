@@ -29,17 +29,3 @@ Direction Convertor::convertCoordsToDir(std::vector<std::pair<int,int>> mouseCoo
     return direction;
 }
 
-Direction Convertor::convertSignalToDir(std::string signal){
-    Direction direction;
-
-    if(signal == "LEFT"){
-        direction = Direction::LEFT;
-    }else if(signal == "UP"){
-        direction = Direction::UP;
-    }else if(signal == "RIGHT"){
-        direction = Direction::RIGHT;
-    }else if(signal == "DOWN"){
-        direction = Direction::DOWN;
-    }
-    return direction;
-}

@@ -209,15 +209,15 @@ void MainWindow::onRestartButtonClicked(){
     updateUI();
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event){ //It can be better
+void MainWindow::keyPressEvent(QKeyEvent *event){
     if(event->key() == Qt::Key_A || event->key() == Qt::Key_Left){
-        game.moveCellsOnField(Convertor::convertSignalToDir("LEFT"));
+        game.move(Direction::LEFT);
     }else if(event->key() == Qt::Key_D || event->key() == Qt::Key_Right){
-        game.moveCellsOnField(Convertor::convertSignalToDir("RIGHT"));
+        game.move(Direction::RIGHT);
     }else if(event->key() == Qt::Key_W || event->key() == Qt::Key_Up){
-        game.moveCellsOnField(Convertor::convertSignalToDir("UP"));
+        game.move(Direction::UP);
     }else if(event->key() == Qt::Key_S || event->key() == Qt::Key_Down){
-        game.moveCellsOnField(Convertor::convertSignalToDir("DOWN"));
+        game.move(Direction::DOWN);
     }
 
     updateUI();
@@ -233,7 +233,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event){
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent *event){
     std::pair<int,int> newMouseCoords = {event->pos().x(), event->pos().y()};
-    game.moveCellsOnField(Convertor::convertCoordsToDir({mouseCoords, newMouseCoords}));
+    game.move(Convertor::convertCoordsToDir({mouseCoords, newMouseCoords}));
     updateUI();
 }
 

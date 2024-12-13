@@ -7,7 +7,7 @@ Game::Game(int fieldSize){
     loseStatus = false;
 }
 
-const void Game::startGame(int fieldSize){
+void Game::startGame(int fieldSize) {
     gameField.createField(fieldSize);
     int numberOfStartsValues = 2;
     gameField.FillFreeCells(numberOfStartsValues);
@@ -24,6 +24,7 @@ void Game::endGame(){
         gameScore.saveCurrentScore();
     }
     gameField.cleanField();
+    gameField.updateMovability();
     updateWinStatus();
     updateLoseStatus();
 }
@@ -44,10 +45,11 @@ void Game::updateWinStatus(){
 }
 
 void Game::updateLoseStatus(){
+    gameField.updateMovability();
     loseStatus = !gameField.getMovableStatus();
 }
 
-void Game::moveCellsOnField(Direction direction){
+void Game::move(Direction direction){
 
     int incrementForScore = 0;
 

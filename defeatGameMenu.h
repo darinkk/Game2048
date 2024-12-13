@@ -8,13 +8,13 @@ class DefeatGameMenu : public  GameMenu{
 public:
     DefeatGameMenu(QWidget *parent = nullptr);
     ~DefeatGameMenu() = default;
+signals:
+    void startNewGameSignal();
 private:
     void setupUI() override;
     void closeEvent(QCloseEvent *event) override;
 private:
     QPushButton *startNewGameButton;
-signals:
-    void startNewGameSignal();
 };
 
 #endif // DEFEATGAMEMENU_H

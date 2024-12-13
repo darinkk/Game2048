@@ -7,7 +7,6 @@
 class Convertor{
 public:
     static Direction convertCoordsToDir(std::vector<std::pair<int,int>> mouseCoords);
-    static Direction convertSignalToDir(std::string signal);
 };
 
 #endif // CONVERTOR_H

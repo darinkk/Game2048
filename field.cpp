@@ -68,7 +68,7 @@ void Field::cleanField(){
     }
 }
 
-const int Field::startIndex(Direction dir){
+int Field::startIndex(Direction dir) const {
     if(dir == Direction::DOWN || dir == Direction::RIGHT){
         return size - 1;
     }else{
@@ -76,7 +76,7 @@ const int Field::startIndex(Direction dir){
     }
 }
 
-const int Field::endIndex(Direction dir){
+int Field::endIndex(Direction dir) const {
     if(dir == Direction::DOWN || dir == Direction::RIGHT){
         return 0;
     }else{
@@ -84,7 +84,7 @@ const int Field::endIndex(Direction dir){
     }
 }
 
-const int Field::step(Direction dir){
+int Field::step(Direction dir) const {
     if(dir == Direction::DOWN || dir == Direction::RIGHT){
         return -1;
     }else{

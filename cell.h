@@ -11,7 +11,7 @@ public:
     Cell(int v);
     bool isMovable(); //Check if the cell is movable
     bool haveWinValue(){return value >= 2048;} //Check if the cell contains win value (2048)
-    const int getValue(){return value;}
+    int getValue()const {return value;}
     int moveCell(Direction direction); //Move cell value to next cell in direction dir if possible
     void addNeighbor(Direction dir, Cell *neighbor); //Add/chenge cell neighbor (only UP,DOWN,LEFT,RIGHT)
     void setValue(int newValue); //Set cell value as newValue
